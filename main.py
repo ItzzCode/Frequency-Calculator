@@ -94,10 +94,12 @@ holeDistances: list = []
 for i in range(len(holePlacements)-1):
         holeDistances.append(math.fabs(holePlacements[i + 1] - holePlacements[i]))
 
-cutOff = cutOffFrequency(avg(holeRadii[:len(holeDistances)-1]), tubeRadius, speedOfSound, avg(holeDistances)/2, avg(holePlacements))
+if len(holePlacements) != 0:
+    cutOff = cutOffFrequency(avg(holeRadii[:len(holeDistances)-1]), tubeRadius, speedOfSound, avg(holeDistances)/2, avg(holePlacements))
 
 print("F - Fundamental; C - Cut-Off Frequency")
 for i, holePlacement in enumerate(holePlacements[::-1]):
     print(f"{i+1}: {holePlacement*100:5.2f}cm{holeFrequencies[::-1][i]:>9.2f}Hz")
-print(f"F: {tubeLength*100:5.2f}cm{lowestFrequency:>9.2f}Hz")
-print(f"C: {cutOff:>16.2f}Hz")
+print(f"F: {tubeLength*100:6.2f}cm{lowestFrequency:>10.2f}Hz")
+if "cutOff" in globals():
+    print(f"C: {cutOff:>16.2f}Hz")
