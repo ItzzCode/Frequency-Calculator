@@ -25,12 +25,16 @@ inputMode = input("Use default values? (Y/n): ").lower() == "n"
 tubeRadius: float = 1.5 / 100 #m, don't set to wide lest cutOffFrequency() errors
 tubeOuterWidth: float = 1 / 100 #m
 speedOfSound: float = 343.7 #m/s
-A: int = 220 #Hz
+octave: int = 3 #NOT scientific notation octaves, i.e. start on A
+A4: int = 440 #Hz
 stepsFromA: int = 8 #set to F
-noteIntervals: list = [2, 4, 5, 7, 9, 11, 12] #14, 16, 17, 19]
+noteIntervals: list = [2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19] #Major scale up to octave + fifth
 
 #holeRadii, Placements, & Frequencies are in furthest to closest order from place of articulation
 holeRadii: list = [ 
+    0.1,
+    0.1,
+    0.1,
     0.1,
     0.1,
     0.1,
@@ -54,11 +58,15 @@ if inputMode:
     if anInput != "":
         speedOfSound = float(anInput)
 
-    anInput = input(f"Enter the frequency of concert A (Hz, default: {A}): ")
+    anInput = input(f"Enter the octave of the note (default: {octave}): ")
     if anInput != "":
-        A = int(anInput)
+        octave = int(anInput)
 
-    anInput = input(f"Enter the number of steps from A (default: {stepsFromA}): ")
+    anInput = input(f"Enter the frequency of concert A (Hz, default: {A4}): ")
+    if anInput != "":
+        A4 = int(anInput)
+
+    anInput = input(f"Enter the number of steps from A (octaves starting at A, default: {stepsFromA}): ")
     if anInput != "":
         stepsFromA = int(anInput)
 
@@ -76,7 +84,7 @@ if inputMode:
             anInput = input(f"Enter the steps from fundamental of hole {i+1}: ")
             noteIntervals.append(int(anInput))
 
-lowestFrequency: float = A * 2**(8/12) #Hz
+lowestFrequency: float = A4 * 2**(octave-4) * 2**(stepsFromA/12) #Hz
 tubeLength: float = frequencyToLength(lowestFrequency) - 2 * endCorrection(tubeRadius)
 holePlacements: list = []
 holeFrequencies: list = []
@@ -94,12 +102,14 @@ holeDistances: list = []
 for i in range(len(holePlacements)-1):
         holeDistances.append(math.fabs(holePlacements[i + 1] - holePlacements[i]))
 
-if len(holePlacements) != 0:
+if len(holePlacements) not in [0, 1]:
     cutOff = cutOffFrequency(avg(holeRadii[:len(holeDistances)-1]), tubeRadius, speedOfSound, avg(holeDistances)/2, avg(holePlacements))
 
 print("F - Fundamental; C - Cut-Off Frequency")
+print("\"Mouthpiece\"")
 for i, holePlacement in enumerate(holePlacements[::-1]):
-    print(f"{i+1}: {holePlacement*100:5.2f}cm{holeFrequencies[::-1][i]:>9.2f}Hz")
-print(f"F: {tubeLength*100:6.2f}cm{lowestFrequency:>10.2f}Hz")
+    print(f"{i+1:>2}: {holePlacement*100:6.2f}cm{holeFrequencies[::-1][i]:>10.2f}Hz")
+print(f" F: {tubeLength*100:6.2f}cm{lowestFrequency:>10.2f}Hz")
 if "cutOff" in globals():
-    print(f"C: {cutOff:>16.2f}Hz")
+    print(f" C: {cutOff:>18.2f}Hz")
+print("\"Bell\"")
