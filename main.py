@@ -108,7 +108,9 @@ if len(holePlacements) not in [0, 1]:
 print("F - Fundamental; C - Cut-Off Frequency")
 print("\"Mouthpiece\"")
 for i, holePlacement in enumerate(holePlacements[::-1]):
-    print(f"{i+1:>2}: {holePlacement*100:6.2f}cm{holeFrequencies[::-1][i]:>10.2f}Hz")
+    print(f"{i+1:>2}: {holePlacement*100:6.2f}cm\
+{holeFrequencies[::-1][i]:>10.2f}Hz" + \
+          (f"{holeDistances[::-1][i]*100:>8.2f}cm" if i < len(holeDistances) else ""))
 print(f" F: {tubeLength*100:6.2f}cm{lowestFrequency:>10.2f}Hz")
 if "cutOff" in globals():
     print(f" C: {cutOff:>18.2f}Hz")
