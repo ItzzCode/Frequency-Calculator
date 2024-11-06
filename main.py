@@ -89,6 +89,7 @@ lowestFrequency: float = A4 * 2**(octave-4) * 2**(stepsFromA/12) #Hz
 tubeLength: float = frequencyToLength(lowestFrequency) - 2 * endCorrection(tubeRadius)
 holePlacements: list = []
 holeFrequencies: list = []
+holeConflicts: list = []
 
 print()
 
@@ -101,7 +102,9 @@ for i, interval in enumerate(noteIntervals):
 
 holeDistances: list = []
 for i in range(len(holePlacements)-1):
-        holeDistances.append(math.fabs(holePlacements[i + 1] - holePlacements[i]))
+        holeDistance = math.fabs(holePlacements[i + 1] - holePlacements[i])
+        holeConflicts[i] = holeDistance - holeRadii[i] - holeRadii[i+1] < 0
+        holeDistances.append(holeDistance)
 
 if len(holePlacements) not in [0, 1]:
     cutOff = cutOffFrequency(
@@ -122,7 +125,8 @@ print("\"Mouthpiece\"")
 for i, holePlacement in enumerate(holePlacements[::-1]):
     print(f"{i+1:>2}: {holePlacement*100:6.2f}cm\
 {holeFrequencies[::-1][i]:>10.2f}Hz" + \
-          (f"{holeDistances[::-1][i]*100:>8.2f}cm" if i < len(holeDistances) else ""))
+          (f"{holeDistances[::-1][i]*100:>8.2f}cm" if i < len(holeDistances) else "") +\
+         (f"{'!':>10}" if holeConflicts[::-1][i] else ""))
 print(f" F: {tubeLength*100:6.2f}cm{lowestFrequency:>10.2f}Hz")
 
 if "cutOff" in globals():
